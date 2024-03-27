@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<!-- Copyright © Klevu Oy. All rights reserved. See LICENSE.txt for license details. -->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="klevu_frontend">
+            <resource>Klevu_FrontendApi::frontend</resource>
+            <include path="Klevu_FrontendMetadata::system/frontend.xml"/>
+        </section>
+    </system>
+</config>

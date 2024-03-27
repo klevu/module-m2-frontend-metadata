@@ -1,0 +1,33 @@
+{
+    "name": "klevu/module-m2-frontend-metadata",
+    "description": "",
+    "require": {
+        "php": "~8.1.0|~8.2.0",
+        "psr/log": "*",
+        "klevu/module-m2-frontend-metadata-api": "0.1.0",
+        "klevu/module-m2-frontend-metadata-categorynavigation": "0.1.0",
+        "klevu/module-m2-frontend-metadata-recommendations": "0.1.0",
+        "klevu/module-m2-frontend-metadata-search": "0.1.0",
+        "magento/framework": "^103.0.4"
+    },
+    "type": "magento2-module",
+    "version": "0.1.0",
+    "license": [
+        "MIT"
+    ],
+    "authors": [
+        {
+            "name": "Klevu Oy",
+            "email": "niraj.aswani@klevu.com",
+            "homepage": "https://www.klevu.com/"
+        }
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Klevu\\FrontendMetadata\\": ""
+        }
+    }
+}

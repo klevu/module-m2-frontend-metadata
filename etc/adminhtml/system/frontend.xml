@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<!-- Copyright © Klevu Oy. All rights reserved. See LICENSE.txt for license details. -->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+
+    <group id="metadata"
+           translate="label"
+           sortOrder="90"
+           showInDefault="1"
+           showInWebsite="1"
+           showInStore="1">
+        <label>Page Meta</label>
+        <attribute type="expanded">1</attribute>
+        <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
+
+        <field id="enabled"
+               translate="label comment"
+               sortOrder="10"
+               type="select"
+               showInDefault="1"
+               showInWebsite="1"
+               showInStore="1">
+            <config_path>klevu_frontend/metadata/enabled</config_path>
+            <label>Enabled</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <comment><![CDATA[Enable Page Meta on Storefront, when not required by other modules.]]></comment>
+        </field>
+    </group>
+</config>

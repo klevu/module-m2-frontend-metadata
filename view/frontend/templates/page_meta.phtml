@@ -1,0 +1,32 @@
+<?php
+
+/**
+ * Copyright © Klevu Oy. All rights reserved. See LICENSE.txt for license details.
+ */
+
+declare(strict_types=1);
+
+use Klevu\FrontendMetadataApi\ViewModel\PageMetaInterface;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Helper\SecureHtmlRenderer;
+
+/**
+ * @var Template $block
+ * @var PageMetaInterface $pageMetaViewModel
+ * @var SecureHtmlRenderer $secureRenderer
+ */
+$pageMetaViewModel = $block->getPageMetaViewModel();
+?>
+<?php if ($pageMetaViewModel->isEnabled()): ?>
+    <?php $pageMeta = $pageMetaViewModel->getMeta(); ?>
+    <?= /* @noEscape */
+    $secureRenderer->renderTag(
+        tagName: 'script',
+        attributes: ['type' => 'text/javascript', 'id' => 'klevu_meta'],
+        content: "\nwindow._klvWebhook[function() {"
+          . "\n\twindow.klevu_meta = " . /* @noEscape */ $pageMeta
+          . "\n\tklevu({powerUp: {pageMeta: true}});"
+        ."\n}];\n",
+        textContent: false,
+    ) ?>
+<?php endif; ?>
