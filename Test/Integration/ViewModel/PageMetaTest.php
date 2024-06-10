@@ -153,8 +153,6 @@ class PageMetaTest extends TestCase
 
         $this->assertArrayHasKey('page', $pageMeta);
 
-        $this->assertArrayHasKey(key: 'cart', array: $pageMeta['page']);
-        $this->assertArrayHasKey(key: 'products', array: $pageMeta['page']['cart']);
-        $this->assertIsArray(actual: $pageMeta['page']['cart']['products']);
+        $this->assertArrayNotHasKey(key: 'cart', array: $pageMeta['page']);
     }
 }

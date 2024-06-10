@@ -24,6 +24,8 @@ use Magento\Bundle\Model\Product\Type as BundleType;
 use Magento\Catalog\Model\Product\Type;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Downloadable\Model\Product\Type as DownloadableType;
+use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
+use Magento\Eav\Model\Entity\Attribute\AttributeInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\Quote\Api\CartRepositoryInterface;
@@ -212,6 +214,9 @@ class ItemIdProviderTest extends TestCase
     {
         $this->createAttribute(['attribute_type' => 'configurable']);
         $attributeFixture = $this->attributeFixturePool->get('test_attribute');
+        /** @var AbstractAttribute&AttributeInterface $attribute */
+        $attribute = $attributeFixture->getAttribute();
+        $attributeSource = $attribute->getSource();
 
         $this->createProduct([
             'key' => 'product_simple_1',
@@ -219,7 +224,7 @@ class ItemIdProviderTest extends TestCase
             'sku' => 'product_simple_sku_1',
             'price' => 123.45,
             'data' => [
-                $attributeFixture->getAttributeCode() => '1',
+                $attributeFixture->getAttributeCode() => $attributeSource->getOptionId('Option 1'),
             ],
         ]);
         $simpleProductFixture1 = $this->productFixturePool->get('product_simple_1');
@@ -229,7 +234,7 @@ class ItemIdProviderTest extends TestCase
             'sku' => 'product_simple_sku_2',
             'price' => 456.78,
             'data' => [
-                $attributeFixture->getAttributeCode() => '2',
+                $attributeFixture->getAttributeCode() => $attributeSource->getOptionId('Option 2'),
             ],
         ]);
         $simpleProductFixture2 = $this->productFixturePool->get('product_simple_2');
@@ -254,7 +259,7 @@ class ItemIdProviderTest extends TestCase
                     $configurableProductFixture->getSku() => [
                         'qty' => 1,
                         'options' => [
-                            $attributeFixture->getAttributeCode() => 'Option 1',
+                            $attributeFixture->getAttributeCode() => $attributeSource->getOptionId('Option 1'),
                         ],
                     ],
                 ],
@@ -394,6 +399,9 @@ class ItemIdProviderTest extends TestCase
     {
         $this->createAttribute(['attribute_type' => 'configurable']);
         $attributeFixture = $this->attributeFixturePool->get('test_attribute');
+        /** @var AbstractAttribute&AttributeInterface $attribute */
+        $attribute = $attributeFixture->getAttribute();
+        $attributeSource = $attribute->getSource();
 
         $this->createProduct([
             'key' => 'product_simple_1',
@@ -401,7 +409,7 @@ class ItemIdProviderTest extends TestCase
             'sku' => 'product_simple_sku_1',
             'price' => 123.45,
             'data' => [
-                $attributeFixture->getAttributeCode() => '1',
+                $attributeFixture->getAttributeCode() => $attributeSource->getOptionId('Option 1'),
             ],
         ]);
         $simpleProductFixture1 = $this->productFixturePool->get('product_simple_1');
@@ -411,7 +419,7 @@ class ItemIdProviderTest extends TestCase
             'sku' => 'product_simple_sku_2',
             'price' => 456.78,
             'data' => [
-                $attributeFixture->getAttributeCode() => '2',
+                $attributeFixture->getAttributeCode() => $attributeSource->getOptionId('Option 2'),
             ],
         ]);
         $simpleProductFixture2 = $this->productFixturePool->get('product_simple_2');
@@ -436,7 +444,7 @@ class ItemIdProviderTest extends TestCase
                     $configurableProductFixture->getSku() => [
                         'qty' => 1,
                         'options' => [
-                            $attributeFixture->getAttributeCode() => 'Option 1',
+                            $attributeFixture->getAttributeCode() => $attributeSource->getOptionId('Option 1'),
                         ],
                     ],
                 ],

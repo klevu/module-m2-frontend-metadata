@@ -21,16 +21,30 @@ $pageMetaViewModel = $block->getPageMetaViewModel();
     <?php return; ?>
 <?php endif; ?>
 
-<?php $pageMeta = $pageMetaViewModel->getMeta(); ?>
 <?php
 $scriptString = <<<script
-    window.klevu_meta = {$pageMeta};
-    klevu({powerUp: {pageMeta: true}});
+    require(['Magento_Customer/js/customer-data'], function (customerData) {
+        var cart = customerData.get('cart');
+        var count = cart().summary_count;
+        cart.subscribe(function () {
+            if (cart().summary_count !== count) {
+                const data = {
+                    'page': {
+                        'cart': customerData.get('klevu_metadata_cart')
+                    }
+                };
+                klevu.pageMeta.update(data, 2);
+            }
+        });
+    });
 script;
 ?>
 <?= $secureRenderer->renderTag(
     tagName: 'script',
-    attributes: ['type' => 'text/javascript', 'id' => 'klevu_meta'],
+    attributes: [
+        'type' => 'text/javascript',
+        'id' => 'klevu_cart_meta',
+    ],
     content: $scriptString,
     textContent: false,
 ) ?>

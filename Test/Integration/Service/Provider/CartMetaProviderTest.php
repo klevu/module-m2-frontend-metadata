@@ -24,6 +24,8 @@ use Magento\Catalog\Model\Product\Type;
 use Magento\Checkout\Model\Session;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Downloadable\Model\Product\Type as DownloadableType;
+use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
+use Magento\Eav\Model\Entity\Attribute\AttributeInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
@@ -275,6 +277,9 @@ class CartMetaProviderTest extends TestCase
     {
         $this->createAttribute(['attribute_type' => 'configurable']);
         $attributeFixture = $this->attributeFixturePool->get('test_attribute');
+        /** @var AbstractAttribute&AttributeInterface $attribute */
+        $attribute = $attributeFixture->getAttribute();
+        $attributeSource = $attribute->getSource();
 
         $this->createProduct([
             'key' => 'product_simple',
@@ -282,7 +287,7 @@ class CartMetaProviderTest extends TestCase
             'sku' => 'product_simple_sku',
             'price' => 123.45,
             'data' => [
-                $attributeFixture->getAttributeCode() => '1',
+                $attributeFixture->getAttributeCode() => $attributeSource->getOptionId('Option 1'),
             ],
         ]);
         $simpleProductFixture = $this->productFixturePool->get('product_simple');
@@ -306,7 +311,7 @@ class CartMetaProviderTest extends TestCase
                     $configurableProductFixture->getSku() => [
                         'qty' => 1,
                         'options' => [
-                            $attributeFixture->getAttributeCode() => 'Option 1',
+                            $attributeFixture->getAttributeCode() => $attributeSource->getOptionId('Option 1'),
                         ],
                     ],
                 ],

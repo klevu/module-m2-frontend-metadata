@@ -113,9 +113,7 @@ class CategoryPageMetaTest extends TestCase
         $this->assertArrayHasKey(key: 'pageType', array: $pageMeta['page']);
         $this->assertSame(expected: 'category', actual: $pageMeta['page']['pageType']);
 
-        $this->assertArrayHasKey(key: 'cart', array: $pageMeta['page']);
-        $this->assertArrayHasKey(key: 'products', array: $pageMeta['page']['cart']);
-        $this->assertIsArray(actual: $pageMeta['page']['cart']);
+        $this->assertArrayNotHasKey(key: 'cart', array: $pageMeta['page']);
 
         $this->assertArrayHasKey(key: 'category', array: $pageMeta['page']);
         $categoryData = $pageMeta['page']['category'];
@@ -184,9 +182,7 @@ class CategoryPageMetaTest extends TestCase
         $this->assertArrayHasKey('pageType', $pageMeta['page']);
         $this->assertSame(expected: 'category', actual: $pageMeta['page']['pageType']);
 
-        $this->assertArrayHasKey(key: 'cart', array: $pageMeta['page']);
-        $this->assertArrayHasKey(key: 'products', array: $pageMeta['page']['cart']);
-        $this->assertIsArray(actual: $pageMeta['page']['cart']['products']);
+        $this->assertArrayNotHasKey(key: 'cart', array: $pageMeta['page']);
 
         $this->assertArrayHasKey('category', $pageMeta['page']);
         $categoryData = $pageMeta['page']['category'];
@@ -247,9 +243,7 @@ class CategoryPageMetaTest extends TestCase
         $this->assertArrayHasKey('pageType', $pageMeta['page']);
         $this->assertSame(expected: 'category', actual: $pageMeta['page']['pageType']);
 
-        $this->assertArrayHasKey(key: 'cart', array: $pageMeta['page']);
-        $this->assertArrayHasKey(key: 'products', array: $pageMeta['page']['cart']);
-        $this->assertIsArray(actual: $pageMeta['page']['cart']['products']);
+        $this->assertArrayNotHasKey(key: 'cart', array: $pageMeta['page']);
 
         $this->assertArrayHasKey(key: 'quick', array: $pageMeta['page']);
         $this->assertArrayHasKey(key: 'products', array: $pageMeta['page']['quick']);

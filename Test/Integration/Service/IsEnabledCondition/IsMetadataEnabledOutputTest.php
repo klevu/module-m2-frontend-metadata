@@ -36,11 +36,10 @@ class IsMetadataEnabledOutputTest extends AbstractController
     /**
      * @var string|null
      */
-    private ?string $pattern = '#<script type="text.*javascript" id="klevu_meta">'
-        . '\s*window._klvWebhook\[function\(\) \{\s*'
-        . 'window.klevu_meta =.*\s*'
+    private ?string $pattern = '#<script type="text.*javascript" id="klevu_meta">\s*'
+        . 'window.klevu_meta = .*\s*'
         . 'klevu\(\{powerUp: \{pageMeta: true\}\}\);\s*'
-        . '\}\];\s*</script>#';
+        . '</script>#';
     /**
      * @var ObjectManagerInterface|null
      */
