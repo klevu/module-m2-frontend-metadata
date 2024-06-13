@@ -114,9 +114,7 @@ class ProductPageMetaTest extends TestCase
         $this->assertArrayHasKey('pageType', $pageMeta['page']);
         $this->assertSame(expected: 'pdp', actual: $pageMeta['page']['pageType']);
 
-        $this->assertArrayHasKey(key: 'cart', array: $pageMeta['page']);
-        $this->assertArrayHasKey(key: 'products', array: $pageMeta['page']['cart']);
-        $this->assertIsArray(actual: $pageMeta['page']['cart']['products']);
+        $this->assertArrayNotHasKey(key: 'cart', array: $pageMeta['page']);
 
         $this->assertArrayHasKey(key: 'quick', array: $pageMeta['page']);
         $this->assertArrayHasKey(key: 'products', array: $pageMeta['page']['quick']);

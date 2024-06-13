@@ -21,16 +21,28 @@ $pageMetaViewModel = $block->getPageMetaViewModel();
     <?php return; ?>
 <?php endif; ?>
 
-<?php $pageMeta = $pageMetaViewModel->getMeta(); ?>
 <?php
 $scriptString = <<<script
-    window.klevu_meta = {$pageMeta};
-    klevu({powerUp: {pageMeta: true}});
+    const updateMetadata = (event) => {
+        // event.detail.data contains the entire sectionData
+        const sectionData = event.detail.data;
+        const data = {
+            'page': {
+                'cart': sectionData.klevu_metadata_cart ? sectionData.klevu_metadata_cart : []
+            }
+        };
+        const pageMetaVersion = 2;
+        klevu.pageMeta.update(data, pageMetaVersion);
+    };
+    window.addEventListener('private-content-loaded', updateMetadata, { once: false });
 script;
 ?>
 <?= $secureRenderer->renderTag(
     tagName: 'script',
-    attributes: ['type' => 'text/javascript', 'id' => 'klevu_meta'],
+    attributes: [
+        'type' => 'text/javascript',
+        'id' => 'klevu_cart_meta',
+    ],
     content: $scriptString,
     textContent: false,
 ) ?>
