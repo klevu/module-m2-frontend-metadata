@@ -5,7 +5,7 @@
     <body>
         <referenceBlock name="Klevu_FrontendMetadata.cart_meta" remove="true"/>
 
-        <referenceBlock name="before.body.end">
+        <referenceContainer name="Klevu_Frontend.before.body.end">
             <block name="Klevu_FrontendMetadata.hyva.cart_meta"
                    template="Klevu_FrontendMetadata::hyva/cart_meta.phtml"
                    before="-"
@@ -15,6 +15,6 @@
                               xsi:type="object">Klevu\FrontendMetadata\ViewModel\PageMeta</argument>
                 </arguments>
             </block>
-        </referenceBlock>
+        </referenceContainer>
     </body>
 </page>

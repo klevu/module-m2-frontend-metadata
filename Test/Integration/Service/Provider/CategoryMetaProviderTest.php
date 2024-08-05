@@ -12,6 +12,7 @@ use Klevu\FrontendMetadata\Service\Provider\CategoryMetaProvider;
 use Klevu\FrontendMetadataApi\Service\Provider\PageMetaProviderInterface;
 use Klevu\Registry\Api\CategoryRegistryInterface;
 use Klevu\TestFixtures\Catalog\CategoryTrait;
+use Klevu\TestFixtures\Store\StoreFixturesPool;
 use Klevu\TestFixtures\Store\StoreTrait;
 use Klevu\TestFixtures\Traits\ObjectInstantiationTrait;
 use Klevu\TestFixtures\Traits\SetAuthKeysTrait;
@@ -27,6 +28,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 use TddWizard\Fixtures\Catalog\CategoryFixturePool;
+use TddWizard\Fixtures\Core\ConfigFixture;
 
 /**
  * @covers \Klevu\FrontendMetadata\Service\Provider\CategoryMetaProvider
@@ -71,6 +73,7 @@ class CategoryMetaProviderTest extends TestCase
         $this->interfaceFqcn = PageMetaProviderInterface::class;
         $this->objectManager = Bootstrap::getObjectManager();
         $this->storeManager = $this->objectManager->get(StoreManagerInterface::class);
+        $this->storeFixturesPool = $this->objectManager->get(StoreFixturesPool::class);
         $this->categoryFixturePool = $this->objectManager->get(CategoryFixturePool::class);
         $this->scopeConfig = $this->objectManager->get(ScopeConfigInterface::class);
         $this->urlSuffix = $this->scopeConfig->getValue(
@@ -87,24 +90,58 @@ class CategoryMetaProviderTest extends TestCase
         parent::tearDown();
 
         $this->categoryFixturePool->rollback();
+        $this->storeFixturesPool->rollback();
     }
 
     /**
      * @magentoConfigFixture default/klevu_frontend/metadata/enabled 1
      * @magentoConfigFixture default_store klevu_frontend/metadata/enabled 1
+     * @magentoDbIsolation disabled
      */
     public function testExecute_ReturnsData_WhenEnabled(): void
     {
-        $this->createCategory();
+        $this->createStore();
+        $storeFixture = $this->storeFixturesPool->get('test_store');
+        $storeManager = $this->objectManager->get(StoreManagerInterface::class);
+        $storeManager->setCurrentStore($storeFixture->get());
+
+        ConfigFixture::setGlobal(
+            path: 'catalog/seo/save_rewrites_history',
+            value: 1,
+        );
+        ConfigFixture::setGlobal(
+            path: 'catalog/seo/generate_category_product_rewrites',
+            value: 1,
+        );
+        ConfigFixture::setGlobal(
+            path: 'catalog/seo/category_url_suffix',
+            value: '.html',
+        );
+
+        $this->createCategory([
+            'url_key' => 'klevu-test-top-category',
+            'store_id' => $storeFixture->getId(),
+        ]);
         $topCategoryFixture = $this->categoryFixturePool->get('test_category');
 
         $this->createCategory([
-            'key' => 'child_category',
+            'key' => 'middle_category',
             'parent' => $topCategoryFixture,
             'name' => '[Klevu] Men',
-            'url_key' => 'klevu-test-mens-category-1',
-            'description' => '[Klevu Test Fixtures] Parent category 1',
+            'url_key' => 'klevu-test-mens-category',
+            'description' => '[Klevu Test Fixtures] Mens category',
             'is_active' => true,
+            'store_id' => $storeFixture->getId(),
+        ]);
+        $middleCategoryFixture = $this->categoryFixturePool->get('middle_category');
+        $this->createCategory([
+            'key' => 'child_category',
+            'parent' => $middleCategoryFixture,
+            'name' => '[Klevu] Jacket',
+            'url_key' => 'klevu-test-jacket-category',
+            'description' => '[Klevu Test Fixtures] Jacket category',
+            'is_active' => true,
+            'store_id' => $storeFixture->getId(),
         ]);
         $childCategoryFixture = $this->categoryFixturePool->get('child_category');
 
@@ -126,14 +163,25 @@ class CategoryMetaProviderTest extends TestCase
         }
         $this->assertSame(
             expected: $this->prepareUrl(
-                urlKey: 'klevu-test-mens-category-1',
+                urlKey: 'klevu-test-top-category/klevu-test-mens-category/klevu-test-jacket-category',
             ),
             actual: $actualResult['categoryUrl'],
+            message: 'categoryUrl',
         );
-        $this->assertSame(expected: '[Klevu] Men', actual: $actualResult['categoryName']);
         $this->assertStringContainsString(
-            needle: '/klevu-test-mens-category-1',
+            needle: 'klevu-test-top-category/klevu-test-mens-category/klevu-test-jacket-category',
             haystack: $actualResult['categoryAbsolutePath'],
+            message: 'categoryAbsolutePath',
+        );
+        $this->assertStringContainsString(
+            needle: 'Top Level Category/[Klevu] Men/[Klevu] Jacket',
+            haystack: $actualResult['categoryPath'],
+            message: 'categoryPath',
+        );
+        $this->assertSame(
+            expected: '[Klevu] Jacket',
+            actual: $actualResult['categoryName'],
+            message: 'categoryName',
         );
     }
 
