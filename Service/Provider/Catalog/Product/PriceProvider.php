@@ -80,7 +80,7 @@ class PriceProvider implements PriceProviderInterface
     private function getFinalPrice(ProductInterface $product): float
     {
         if (method_exists($product, 'getFinalPrice')) {
-            return $product->getFinalPrice();
+            return (float)$product->getFinalPrice();
         }
         $this->logger->warning(
             message: 'Method: {method}, Warning: {message}',

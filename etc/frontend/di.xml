@@ -22,7 +22,8 @@
         <arguments>
             <argument name="klevuSettings" xsi:type="array">
                 <item name="powerUp" xsi:type="array">
-                    <item name="pageMeta" xsi:type="boolean">false</item>
+                    <item name="pageMeta"
+                          xsi:type="object">Klevu\FrontendMetadata\Service\Provider\MetadataPowerUpProvider</item>
                 </item>
             </argument>
         </arguments>
@@ -139,4 +140,16 @@
                       xsi:type="object">Klevu\FrontendMetadata\Service\Provider\CartMetaProvider</argument>
         </arguments>
     </type>
+
+    <virtualType name="Klevu\FrontendMetadata\Service\Provider\MetadataPowerUpProvider"
+                 type="Klevu\Frontend\Service\Provider\PowerUpProvider">
+        <arguments>
+            <argument name="isEnabledConditions" xsi:type="array">
+                <item name="klevu_modules_enabled" xsi:type="array">
+                    <item name="klevu_metadata_enabled"
+                          xsi:type="object">Klevu\FrontendMetadata\Service\IsEnabledCondition\IsMetadataEnabledCondition</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
 </config>

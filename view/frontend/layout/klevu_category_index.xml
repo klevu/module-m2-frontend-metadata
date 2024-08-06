@@ -3,7 +3,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
-        <referenceBlock name="before.body.end">
+        <referenceContainer name="Klevu_Frontend.before.body.end">
             <block name="Klevu_FrontendMetadata.page_meta"
                    template="Klevu_FrontendMetadata::page_meta.phtml">
                 <arguments>
@@ -11,6 +11,6 @@
                               xsi:type="object">Klevu\FrontendMetadata\ViewModel\PageMeta\Category</argument>
                 </arguments>
             </block>
-        </referenceBlock>
+        </referenceContainer>
     </body>
 </page>
