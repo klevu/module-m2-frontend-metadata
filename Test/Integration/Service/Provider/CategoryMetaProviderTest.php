@@ -58,9 +58,9 @@ class CategoryMetaProviderTest extends TestCase
      */
     private ?ScopeConfigInterface $scopeConfig = null;
     /**
-     * @var string
+     * @var string|null
      */
-    private string $urlSuffix;
+    private ?string $urlSuffix = null;
 
     /**
      * @return void

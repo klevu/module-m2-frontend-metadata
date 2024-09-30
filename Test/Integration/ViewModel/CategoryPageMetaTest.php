@@ -53,7 +53,7 @@ class CategoryPageMetaTest extends TestCase
     /**
      * @var ScopeProviderInterface
      */
-    private ScopeProviderInterface $scopeProvider;
+    private ?ScopeProviderInterface $scopeProvider = null;
 
     /**
      * @return void

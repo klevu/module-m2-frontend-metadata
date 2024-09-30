@@ -32,7 +32,11 @@ $scriptString = <<<script
             }
         };
         const pageMetaVersion = 2;
-        klevu.pageMeta.update(data, pageMetaVersion);
+        window._klvReady = window._klvReady || [];
+        window._klvReady.push(function() {
+            klevu.pageMeta.update(data, pageMetaVersion);
+        });
+
     };
     window.addEventListener('private-content-loaded', updateMetadata, { once: false });
 script;

@@ -33,7 +33,10 @@ $scriptString = <<<script
                         'cart': customerData.get('klevu_metadata_cart')
                     }
                 };
-                klevu.pageMeta.update(data, 2);
+                window._klvReady = window._klvReady || [];
+                window._klvReady.push(function() {
+                     klevu.pageMeta.update(data, 2);
+                });
             }
         });
     });

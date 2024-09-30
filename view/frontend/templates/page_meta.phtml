@@ -26,11 +26,21 @@ $pageMetaViewModel = $block->getPageMetaViewModel();
 $scriptString = <<<script
     window.klevu_meta = {$pageMeta};
     klevu({powerUp: {pageMeta: true}});
+
+script;
+?>
+<?php
+$script = <<<script
+    window._klvReady = window._klvReady || [];
+    window._klvReady.push(function() {
+        {$scriptString}
+    });
+
 script;
 ?>
 <?= $secureRenderer->renderTag(
     tagName: 'script',
     attributes: ['type' => 'text/javascript', 'id' => 'klevu_meta'],
-    content: $scriptString,
+    content: $script,
     textContent: false,
 ) ?>
