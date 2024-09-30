@@ -145,20 +145,23 @@ class MigrateLegacyConfigurationSettingsTest extends TestCase
                 Constants::XML_PATH_METADATA_ENABLED,
                 ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
             ),
+            message: 'Metadata Enabled Globally',
         );
         $this->assertTrue(
-            $this->scopeConfig->isSetFlag(
+            condition: $this->scopeConfig->isSetFlag(
                 Constants::XML_PATH_METADATA_ENABLED,
                 ScopeInterface::SCOPE_STORES,
                 $testStore1->getId(),
             ),
+            message: 'Metadata Enabled Store 1',
         );
         $this->assertTrue(
-            $this->scopeConfig->isSetFlag(
+            condition: $this->scopeConfig->isSetFlag(
                 Constants::XML_PATH_METADATA_ENABLED,
                 ScopeInterface::SCOPE_STORES,
                 $testStore2->getId(),
             ),
+            message: 'Metadata Enabled Store 2',
         );
     }
 
@@ -432,13 +435,14 @@ class MigrateLegacyConfigurationSettingsTest extends TestCase
      */
     private function assertInitialConfig(bool $enabled = true): void
     {
+        $this->cleanConfig();
         $enabledGlobally = $this->scopeConfig->isSetFlag(
             MigrateLegacyConfigurationSettings::XML_PATH_LEGACY_METADATA_ENABLED,
             ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         );
         $enabled
-            ? $this->assertTrue(condition: $enabledGlobally)
-            : $this->assertFalse(condition: $enabledGlobally);
+            ? $this->assertTrue(condition: $enabledGlobally, message: 'Original value Enabled globally')
+            : $this->assertFalse(condition: $enabledGlobally, message: 'Original value Disabled globally');
 
         $testStore1 = $this->storeFixturesPool->get('test_store_1');
         $testStore2 = $this->storeFixturesPool->get('test_store_2');
@@ -454,8 +458,8 @@ class MigrateLegacyConfigurationSettingsTest extends TestCase
                 $storeId,
             );
             $enabled
-                ? $this->assertTrue(condition: $enabledForStore)
-                : $this->assertFalse(condition: $enabledForStore);
+                ? $this->assertTrue(condition: $enabledForStore, message: 'Original value Enabled for store')
+                : $this->assertFalse(condition: $enabledForStore, message: 'Original value Disabled for store');
         }
     }
 
