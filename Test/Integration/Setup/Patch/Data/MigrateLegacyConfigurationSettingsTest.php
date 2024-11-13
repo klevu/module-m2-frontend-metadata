@@ -23,8 +23,8 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Store\Model\ScopeInterface;
-use Magento\TestFramework\Indexer\TestCase;
 use Magento\TestFramework\ObjectManager;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers MigrateLegacyConfigurationSettings
