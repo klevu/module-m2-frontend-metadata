@@ -125,6 +125,12 @@ class ProductMetaProviderTest extends TestCase
         $this->assertArrayHasKey(key: 'products', array: $result);
         $actualResult = $result['products'];
 
+        $this->assertCount(
+            expectedCount: 1,
+            haystack: $actualResult,
+        );
+        $actualResultItem = $actualResult[0];
+
         $expectedArrayKeys = [
             'itemId',
             'itemName',
@@ -134,23 +140,27 @@ class ProductMetaProviderTest extends TestCase
             'itemCurrency',
         ];
         foreach ($expectedArrayKeys as $expectedArrayKey) {
-            $this->assertArrayHasKey($expectedArrayKey, $actualResult);
+            $this->assertArrayHasKey($expectedArrayKey, $actualResultItem);
         }
-        $this->assertCount(expectedCount: 6, haystack: $actualResult);
-        $this->assertSame(expected: $productFixture->getId(), actual: (int)$actualResult['itemId'], message: 'itemId');
+        $this->assertCount(expectedCount: 6, haystack: $actualResultItem);
+        $this->assertSame(
+            expected: $productFixture->getId(),
+            actual: (int)$actualResultItem['itemId'],
+            message: 'itemId',
+        );
         $this->assertSame(
             expected: 'Klevu Product Name',
-            actual: $actualResult['itemName'],
+            actual: $actualResultItem['itemName'],
             message: 'itemName',
         );
         $this->assertStringContainsString(
             needle: '/' . $url . '.html',
-            haystack: $actualResult['itemUrl'],
+            haystack: $actualResultItem['itemUrl'],
             message: 'itemUrl',
         );
-        $this->assertSame(expected: '', actual: $actualResult['itemGroupId'], message: 'itemGroupId');
-        $this->assertSame(expected: '99.99', actual: $actualResult['itemSalePrice'], message: 'itemSalePrice');
-        $this->assertSame(expected: 'GBP', actual: $actualResult['itemCurrency']);
+        $this->assertSame(expected: '', actual: $actualResultItem['itemGroupId'], message: 'itemGroupId');
+        $this->assertSame(expected: '99.99', actual: $actualResultItem['itemSalePrice'], message: 'itemSalePrice');
+        $this->assertSame(expected: 'GBP', actual: $actualResultItem['itemCurrency']);
     }
 
     /**
@@ -182,6 +192,12 @@ class ProductMetaProviderTest extends TestCase
         $this->assertArrayHasKey(key: 'products', array: $result);
         $actualResult = $result['products'];
 
+        $this->assertCount(
+            expectedCount: 1,
+            haystack: $actualResult,
+        );
+        $actualResultItem = $actualResult[0];
+
         $expectedArrayKeys = [
             'itemId',
             'itemName',
@@ -191,22 +207,26 @@ class ProductMetaProviderTest extends TestCase
             'itemCurrency',
         ];
         foreach ($expectedArrayKeys as $expectedArrayKey) {
-            $this->assertArrayHasKey($expectedArrayKey, $actualResult);
+            $this->assertArrayHasKey($expectedArrayKey, $actualResultItem);
         }
-        $this->assertCount(expectedCount: 6, haystack: $actualResult);
-        $this->assertSame(expected: $productFixture->getId(), actual: (int)$actualResult['itemId'], message: 'itemId');
+        $this->assertCount(expectedCount: 6, haystack: $actualResultItem);
+        $this->assertSame(
+            expected: $productFixture->getId(),
+            actual: (int)$actualResultItem['itemId'],
+            message: 'itemId',
+        );
         $this->assertSame(
             expected: 'Klevu Grouped Product',
-            actual: $actualResult['itemName'],
+            actual: $actualResultItem['itemName'],
         );
         $this->assertStringContainsString(
             needle: '/' . $url . '.html',
-            haystack: $actualResult['itemUrl'],
+            haystack: $actualResultItem['itemUrl'],
             message: 'itemUrl',
         );
-        $this->assertSame('', $actualResult['itemGroupId']);
-        $this->assertSame('0.00', $actualResult['itemSalePrice']);
-        $this->assertSame(expected: 'USD', actual: $actualResult['itemCurrency']);
+        $this->assertSame('', $actualResultItem['itemGroupId']);
+        $this->assertSame('0.00', $actualResultItem['itemSalePrice']);
+        $this->assertSame(expected: 'USD', actual: $actualResultItem['itemCurrency']);
     }
 
     /**
@@ -257,6 +277,12 @@ class ProductMetaProviderTest extends TestCase
         $this->assertArrayHasKey(key: 'products', array: $result);
         $actualResult = $result['products'];
 
+        $this->assertCount(
+            expectedCount: 1,
+            haystack: $actualResult,
+        );
+        $actualResultItem = $actualResult[0];
+
         $expectedArrayKeys = [
             'itemId',
             'itemName',
@@ -266,26 +292,31 @@ class ProductMetaProviderTest extends TestCase
             'itemCurrency',
         ];
         foreach ($expectedArrayKeys as $expectedArrayKey) {
-            $this->assertArrayHasKey($expectedArrayKey, $actualResult);
+            $this->assertArrayHasKey($expectedArrayKey, $actualResultItem);
         }
-        $this->assertCount(expectedCount: 6, haystack: $actualResult);
-        $this->assertSame(expected: $productFixture->getId(), actual: (int)$actualResult['itemId'], message: 'itemId');
+        $this->assertCount(expectedCount: 6, haystack: $actualResultItem);
+        $this->assertSame(
+            expected: $productFixture->getId(),
+            actual: (int)$actualResultItem['itemId'],
+            message: 'itemId',
+        );
         $this->assertSame(
             expected: 'Klevu Grouped Product With Children',
-            actual: $actualResult['itemName'],
+            actual: $actualResultItem['itemName'],
             message: 'itemName',
         );
         $this->assertStringContainsString(
             needle: '/' . $url . '.html',
-            haystack: $actualResult['itemUrl'],
+            haystack: $actualResultItem['itemUrl'],
             message: 'itemUrl',
         );
-        $this->assertSame(expected: '', actual: $actualResult['itemGroupId'], message: 'itemGroupId');
-        $this->assertSame(expected: '9.99', actual: $actualResult['itemSalePrice'], message: 'itemSalePrice');
-        $this->assertSame(expected: 'USD', actual: $actualResult['itemCurrency'], message: 'itemCurrency');
+        $this->assertSame(expected: '', actual: $actualResultItem['itemGroupId'], message: 'itemGroupId');
+        $this->assertSame(expected: '9.99', actual: $actualResultItem['itemSalePrice'], message: 'itemSalePrice');
+        $this->assertSame(expected: 'USD', actual: $actualResultItem['itemCurrency'], message: 'itemCurrency');
     }
 
     /**
+     * @magentoAppIsolation enabled
      * @magentoDbIsolation disabled
      * @magentoConfigFixture default/klevu_frontend/metadata/enabled 1
      * @magentoConfigFixture default_store klevu_frontend/metadata/enabled 0
@@ -339,6 +370,12 @@ class ProductMetaProviderTest extends TestCase
         $this->assertArrayHasKey(key: 'products', array: $result);
         $actualResult = $result['products'];
 
+        $this->assertCount(
+            expectedCount: 1,
+            haystack: $actualResult,
+        );
+        $actualResultItem = $actualResult[0];
+
         $expectedArrayKeys = [
             'itemId',
             'itemName',
@@ -348,27 +385,31 @@ class ProductMetaProviderTest extends TestCase
             'itemCurrency',
         ];
         foreach ($expectedArrayKeys as $expectedArrayKey) {
-            $this->assertArrayHasKey($expectedArrayKey, $actualResult);
+            $this->assertArrayHasKey($expectedArrayKey, $actualResultItem);
         }
-        $this->assertCount(expectedCount: 6, haystack: $actualResult);
+        $this->assertCount(expectedCount: 6, haystack: $actualResultItem);
         $klevuItemId = $productFixture->getId() . '-' . $productFixtureSimple->getId();
-        $this->assertSame(expected: $klevuItemId, actual: $actualResult['itemId'], message: 'itemId');
+        $this->assertSame(
+            expected: $klevuItemId,
+            actual: $actualResultItem['itemId'],
+            message: 'itemId',
+        );
         $this->assertSame(
             expected: 'Klevu Configurable Product With Children',
-            actual: $actualResult['itemName'],
+            actual: $actualResultItem['itemName'],
             message: 'itemName',
         );
         $this->assertStringContainsString(
             needle: '/' . $url . '.html',
-            haystack: $actualResult['itemUrl'],
+            haystack: $actualResultItem['itemUrl'],
             message: 'itemUrl',
         );
         $this->assertSame(
             expected: $productFixture->getId(),
-            actual: (int)$actualResult['itemGroupId'],
+            actual: (int)$actualResultItem['itemGroupId'],
             message: 'itemGroupId',
         );
-        $this->assertSame(expected: '123.45', actual: $actualResult['itemSalePrice'], message: 'itemSalePrice');
-        $this->assertSame(expected: 'USD', actual: $actualResult['itemCurrency'], message: 'itemCurrency');
+        $this->assertSame(expected: '123.45', actual: $actualResultItem['itemSalePrice'], message: 'itemSalePrice');
+        $this->assertSame(expected: 'USD', actual: $actualResultItem['itemCurrency'], message: 'itemCurrency');
     }
 }

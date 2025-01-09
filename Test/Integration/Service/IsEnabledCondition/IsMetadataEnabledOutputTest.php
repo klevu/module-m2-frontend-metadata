@@ -205,7 +205,7 @@ class IsMetadataEnabledOutputTest extends AbstractController
 
     public function test_MetadataJs_IsIncluded_WhenWebsiteIntegrated_MetadataEnabled(): void
     {
-        $this->markTestSkipped('Re implement when website integratioin is released.');
+        $this->markTestSkipped('Re implement when website integration is released.');
         $this->createWebsite();
         $websiteFixture = $this->websiteFixturesPool->get('test_website');
         $this->createStore([

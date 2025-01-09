@@ -64,12 +64,14 @@ class ProductMetaProvider implements PageMetaProviderInterface
 
         return [
             'products' => [
-                'itemId' => $this->idProvider->getItemId($product),
-                'itemGroupId' => $this->idProvider->getItemGroupId($product),
-                'itemName' => $product->getName(),
-                'itemUrl' => $this->getItemUrl($product),
-                'itemSalePrice' => $this->getItemSalePrice($product),
-                'itemCurrency' => $this->getItemCurrency(),
+                [
+                    'itemId' => $this->idProvider->getItemId($product),
+                    'itemGroupId' => $this->idProvider->getItemGroupId($product),
+                    'itemName' => $product->getName(),
+                    'itemUrl' => $this->getItemUrl($product),
+                    'itemSalePrice' => $this->getItemSalePrice($product),
+                    'itemCurrency' => $this->getItemCurrency(),
+                ],
             ],
         ];
     }
