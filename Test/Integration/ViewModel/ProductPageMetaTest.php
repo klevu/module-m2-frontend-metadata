@@ -124,6 +124,14 @@ class ProductPageMetaTest extends TestCase
         $this->assertArrayHasKey('products', $pageMeta['page']['pdp']);
 
         $productData = $pageMeta['page']['pdp']['products'];
+        $this->assertIsArray($productData);
+        $this->assertCount(
+            expectedCount: 1,
+            haystack: $productData,
+        );
+
+        $productDataItem = $productData[0];
+
         $expectedArrayKeys = [
             'itemUrl',
             'itemId',
@@ -132,16 +140,16 @@ class ProductPageMetaTest extends TestCase
             'itemSalePrice',
             'itemCurrency',
         ];
-        $this->assertSameSize($expectedArrayKeys, $productData);
+        $this->assertSameSize($expectedArrayKeys, $productDataItem);
         foreach ($expectedArrayKeys as $expectedArrayKey) {
-            $this->assertArrayHasKey($expectedArrayKey, $productData);
+            $this->assertArrayHasKey($expectedArrayKey, $productDataItem);
         }
-        $this->assertSame(expected: 'Klevu Product Name', actual: $productData['itemName']);
-        $this->assertStringContainsString(needle: 'http', haystack: $productData['itemUrl']);
-        $this->assertSame(expected: $currentProduct->getId(), actual: $productData['itemId']);
-        $this->assertSame(expected: '', actual: $productData['itemGroupId']);
-        $this->assertSame(expected: '1,299.99', actual: $productData['itemSalePrice']);
-        $this->assertSame(expected: 'USD', actual: $productData['itemCurrency']);
+        $this->assertSame(expected: 'Klevu Product Name', actual: $productDataItem['itemName']);
+        $this->assertStringContainsString(needle: 'http', haystack: $productDataItem['itemUrl']);
+        $this->assertSame(expected: $currentProduct->getId(), actual: $productDataItem['itemId']);
+        $this->assertSame(expected: '', actual: $productDataItem['itemGroupId']);
+        $this->assertSame(expected: '1,299.99', actual: $productDataItem['itemSalePrice']);
+        $this->assertSame(expected: 'USD', actual: $productDataItem['itemCurrency']);
     }
 
     /**
