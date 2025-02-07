@@ -22,7 +22,7 @@ $pageMetaViewModel = $block->getPageMetaViewModel();
 <?php endif; ?>
 
 <?php
-$scriptString = <<<script
+$scriptString = "
     require(['Magento_Customer/js/customer-data'], function (customerData) {
         var cart = customerData.get('cart');
         var count = cart().summary_count;
@@ -40,7 +40,7 @@ $scriptString = <<<script
             }
         });
     });
-script;
+    ";
 ?>
 <?= $secureRenderer->renderTag(
     tagName: 'script',

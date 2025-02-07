@@ -23,20 +23,18 @@ $pageMetaViewModel = $block->getPageMetaViewModel();
 
 <?php $pageMeta = $pageMetaViewModel->getMeta(); ?>
 <?php
-$scriptString = <<<script
+$scriptString = "
     window.klevu_meta = {$pageMeta};
     klevu({powerUp: {pageMeta: true}});
-
-script;
+    ";
 ?>
 <?php
-$script = <<<script
+$script = "
     window._klvReady = window._klvReady || [];
     window._klvReady.push(function() {
         {$scriptString}
     });
-
-script;
+    ";
 ?>
 <?= $secureRenderer->renderTag(
     tagName: 'script',

@@ -22,7 +22,7 @@ $pageMetaViewModel = $block->getPageMetaViewModel();
 <?php endif; ?>
 
 <?php
-$scriptString = <<<script
+$scriptString = "
     const updateMetadata = (event) => {
         // event.detail.data contains the entire sectionData
         const sectionData = event.detail.data;
@@ -39,7 +39,7 @@ $scriptString = <<<script
 
     };
     window.addEventListener('private-content-loaded', updateMetadata, { once: false });
-script;
+    "
 ?>
 <?= $secureRenderer->renderTag(
     tagName: 'script',
