@@ -53,7 +53,7 @@ class ProductMetaProvider implements PageMetaProviderInterface
     }
 
     /**
-     * @return string[][]
+     * @return array<string, array<int, array<string, string|null>>>
      */
     public function get(): array
     {

@@ -25,7 +25,12 @@ $pageMetaViewModel = $block->getPageMetaViewModel();
 <?php
 $scriptString = "
     window.klevu_meta = {$pageMeta};
-    klevu({powerUp: {pageMeta: true}});
+    klevu.support.hook(
+        [\"pageMeta\"],
+        function() {
+            klevu.pageMeta.update(window.klevu_meta, 2);
+        }
+    );
     ";
 ?>
 <?php
