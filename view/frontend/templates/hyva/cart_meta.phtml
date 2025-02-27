@@ -34,9 +34,15 @@ $scriptString = "
         const pageMetaVersion = 2;
         window._klvReady = window._klvReady || [];
         window._klvReady.push(function() {
-            klevu.pageMeta.update(data, pageMetaVersion);
+            klevu.interactive(function() {
+                klevu.support.hook(
+                    [\"pageMeta\"],
+                    function() {
+                        klevu.pageMeta.update(data, pageMetaVersion);
+                    }
+                );
+            });
         });
-
     };
     window.addEventListener('private-content-loaded', updateMetadata, { once: false });
     "

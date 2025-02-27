@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+
+<!-- Copyright © Klevu Oy. All rights reserved. See LICENSE.txt for license details. -->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="Klevu\FrontendMetadataApi\Service\Provider\Catalog\Category\PathProviderInterface"
+                type="Klevu\FrontendMetadata\Service\Provider\Catalog\Category\PathProvider"/>
+
+    <preference for="Klevu\FrontendMetadataApi\Service\Provider\Catalog\Product\IdProviderInterface"
+                type="Klevu\FrontendMetadata\Service\Provider\Catalog\Product\IdProvider"/>
+
+
+    <preference for="Klevu\FrontendMetadataApi\Service\Provider\Catalog\Product\PriceProviderInterface"
+                type="Klevu\FrontendMetadata\Service\Provider\Catalog\Product\PriceProvider"/>
+
+    <preference for="Klevu\FrontendMetadataApi\Service\Provider\Checkout\Cart\ItemIdProviderInterface"
+                type="Klevu\FrontendMetadata\Service\Provider\Checkout\Cart\ItemIdProvider"/>
+
+    <type name="Klevu\Frontend\Service\KlevuSettingsBuilder">
+        <arguments>
+            <argument name="klevuSettings" xsi:type="array">
+                <item name="powerUp" xsi:type="array">
+                    <item name="pageMeta"
+                          xsi:type="object">Klevu\FrontendMetadata\Service\Provider\MetadataPowerUpProvider</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <virtualType name="Klevu\FrontendMetadata\Service\Provider\MetadataEnabledProvider"
+                 type="Klevu\Frontend\Service\Provider\SettingsProvider">
+        <arguments>
+            <argument name="configSettingPath"
+                      xsi:type="const">Klevu\FrontendMetadata\Constants::XML_PATH_METADATA_ENABLED</argument>
+            <argument name="returnType"
+                      xsi:type="const">Klevu\Frontend\Model\Config\Source\KlevuCustomOptionsTypeSource::TYPE_VALUE_BOOLEAN
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Klevu\FrontendMetadata\Service\IsEnabledCondition\IsMetadataEnabledCondition">
+        <arguments>
+            <argument name="metadataEnabledProvider"
+                      xsi:type="object">Klevu\FrontendMetadata\Service\Provider\MetadataEnabledProvider</argument>
+        </arguments>
+    </type>
+
+    <type name="Klevu\FrontendMetadata\ViewModel\PageMeta">
+        <arguments>
+            <argument name="isEnabledConditions" xsi:type="array">
+                <item name="klevu_integrated"
+                      xsi:type="object">Klevu\Frontend\Service\IsEnabledCondition\IsStoreIntegratedCondition</item>
+                <item name="klevu_modules_enabled" xsi:type="array">
+                    <item name="klevu_metadata_enabled"
+                          xsi:type="object">Klevu\FrontendMetadata\Service\IsEnabledCondition\IsMetadataEnabledCondition</item>
+                </item>
+            </argument>
+            <argument name="pageMetaProviders" xsi:type="array">
+                <!-- Do not add cart here, it will get cached, see Magento\Customer\CustomerData\SectionPoolInterface -->
+                <item name="pageType"
+                      xsi:type="object">Klevu\FrontendMetadata\Service\Provider\PageTypeMetaProvider</item>
+            </argument>
+            <argument name="serializer" xsi:type="object">Magento\Framework\Serialize\Serializer\Json</argument>
+        </arguments>
+    </type>
+
+    <!-- PageType Provider -->
+    <type name="Klevu\FrontendMetadata\Service\Provider\PageTypeMetaProvider">
+        <arguments>
+            <argument name="requestPaths" xsi:type="array">
+                <item name="page" xsi:type="array">
+                    <item name="path" xsi:type="string"><![CDATA[cms]]></item>
+                    <item name="pageType" xsi:type="string">page</item>
+                </item>
+                <item name="pdp" xsi:type="array">
+                    <item name="path" xsi:type="string"><![CDATA[catalog/product]]></item>
+                    <item name="pageType" xsi:type="string">pdp</item>
+                </item>
+                <item name="category" xsi:type="array">
+                    <item name="path" xsi:type="string"><![CDATA[catalog/category]]></item>
+                    <item name="pageType" xsi:type="string">category</item>
+                </item>
+                <item name="cart" xsi:type="array">
+                    <item name="path" xsi:type="string"><![CDATA[checkout/cart]]></item>
+                    <item name="pageType" xsi:type="string">cart</item>
+                </item>
+                <item name="checkout" xsi:type="array">
+                    <item name="path" xsi:type="string"><![CDATA[checkout/index]]></item>
+                    <item name="pageType" xsi:type="string">cart</item>
+                </item>
+                <item name="checkout_success" xsi:type="array">
+                    <item name="path" xsi:type="string"><![CDATA[checkout/onepage/success/]]></item>
+                    <item name="pageType" xsi:type="string">checkout</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- PageMeta ViewModel Virtual Type-->
+    <virtualType name="Klevu\FrontendMetadata\ViewModel\PageMeta\Category"
+                 type="Klevu\FrontendMetadata\ViewModel\PageMeta">
+        <arguments>
+            <argument name="pageMetaProviders" xsi:type="array">
+                <item name="category"
+                      xsi:type="object">Klevu\FrontendMetadata\Service\Provider\CategoryMetaProvider</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Klevu\FrontendMetadata\ViewModel\PageMeta\Product"
+                 type="Klevu\FrontendMetadata\ViewModel\PageMeta">
+        <arguments>
+            <argument name="pageMetaProviders" xsi:type="array">
+                <item name="pdp"
+                      xsi:type="object">Klevu\FrontendMetadata\Service\Provider\ProductMetaProvider</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Klevu\FrontendMetadata\Service\Provider\Catalog\Category\PathProvider">
+        <arguments>
+            <argument name="logger" xsi:type="object">Klevu\Frontend\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Klevu\FrontendMetadata\CustomerData\Metadata\Cart">
+        <arguments>
+            <argument name="cartMetadataProvider"
+                      xsi:type="object">Klevu\FrontendMetadata\Service\Provider\CartMetaProvider</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="Klevu\FrontendMetadata\Service\Provider\MetadataPowerUpProvider"
+                 type="Klevu\Frontend\Service\Provider\PowerUpProvider">
+        <arguments>
+            <argument name="isEnabledConditions" xsi:type="array">
+                <item name="klevu_modules_enabled" xsi:type="array">
+                    <item name="klevu_metadata_enabled"
+                          xsi:type="object">Klevu\FrontendMetadata\Service\IsEnabledCondition\IsMetadataEnabledCondition</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+</config>

@@ -98,22 +98,23 @@ class CartMetaProviderTest extends TestCase
     public function testGet_ReturnsEmpty_WhenExceptionThrown(): void
     {
         $exceptionMessage = 'Something went wrong';
+        $exception = new LocalizedException(__($exceptionMessage));
 
         $mockSession = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->getMock();
         $mockSession->expects($this->once())
             ->method('getQuote')
-            ->willThrowException(new LocalizedException(__($exceptionMessage)));
+            ->willThrowException($exception);
 
         $mockLogger = $this->getMockBuilder(LoggerInterface::class)->getMock();
-        $mockLogger->expects($this->once())
-            ->method('error')
+        $mockLogger->method('error')
             ->with(
                 'Method: {method} - Error: {message}',
                 [
                     'method' => 'Klevu\FrontendMetadata\Service\Provider\CartMetaProvider::getQuote',
                     'message' => $exceptionMessage,
+                    'exception' => $exception,
                 ],
             );
 

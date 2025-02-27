@@ -23,25 +23,86 @@ $pageMetaViewModel = $block->getPageMetaViewModel();
 
 <?php
 $scriptString = "
-    require(['Magento_Customer/js/customer-data'], function (customerData) {
-        var cart = customerData.get('cart');
-        var count = cart().summary_count;
-        cart.subscribe(function () {
-            if (cart().summary_count !== count) {
-                const data = {
-                    'page': {
-                        'cart': customerData.get('klevu_metadata_cart')
-                    }
-                };
-                window._klvReady = window._klvReady || [];
-                window._klvReady.push(function() {
-                     klevu.pageMeta.update(data, 2);
-                });
+    require([
+        'Magento_Customer/js/customer-data',
+        'ko',
+        'underscore'
+    ], function (customerData, ko, _) {
+        'use strict';
+
+        var klevuCartMetadata = klevuCartMetadata || {};
+
+        /**
+         * @returns void
+         */
+        klevuCartMetadata.initialize = function () {
+            klevuCartMetadata.cart = customerData.get('cart');
+            klevuCartMetadata.cartCount = klevuCartMetadata.cart().summary_count;
+            klevuCartMetadata.klevu_metadata_cart = customerData.get('klevu_metadata_cart');
+
+            klevuCartMetadata.update(klevuCartMetadata.klevu_metadata_cart());
+
+            klevuCartMetadata.klevu_metadata_cart.subscribe(function (updatedKlevuCartMetadata) {
+                klevuCartMetadata.update(updatedKlevuCartMetadata);
+            });
+
+            if (klevuCartMetadata.hasStoreChanged()) {
+                customerData.reload(['cart', 'klevu_metadata_cart'], false);
             }
-        });
+        };
+
+        /**
+         * @returns {boolean}
+         */
+        klevuCartMetadata.hasStoreChanged = function () {
+            return (
+                klevuCartMetadata.cart().website_id !== window.checkout.websiteId
+                && klevuCartMetadata.cart().website_id !== undefined
+            ) || (
+                klevuCartMetadata.cart().storeId !== window.checkout.storeId
+                && klevuCartMetadata.cart().storeId !== undefined
+            );
+        };
+
+        /**
+         * @returns void
+         */
+        klevuCartMetadata.update = function (updatedKlevuCartMetadata) {
+            if (klevuCartMetadata.cart().summary_count === klevuCartMetadata.cartCount) {
+                return;
+            }
+            klevuCartMetadata.klevu_metadata_cart_data = {};
+            _.each(updatedKlevuCartMetadata, function (value, key) {
+                if (key === 'data_id') {
+                    return;
+                }
+                klevuCartMetadata.klevu_metadata_cart_data[key] = value;
+            }, this);
+
+            const data = {
+                'page': {
+                    'cart': klevuCartMetadata.klevu_metadata_cart_data
+                }
+            };
+            window._klvReady = window._klvReady || [];
+            window._klvReady.push(function() {
+                const pageMetaVersion = 2;
+                klevu.interactive(function() {
+                    klevu.support.hook(
+                        [\"pageMeta\"],
+                        function() {
+                            klevu.pageMeta.update(data, pageMetaVersion);
+                        }
+                    );
+                });
+            });
+        };
+
+        klevuCartMetadata.initialize();
     });
     ";
 ?>
+
 <?= $secureRenderer->renderTag(
     tagName: 'script',
     attributes: [

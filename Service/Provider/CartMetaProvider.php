@@ -66,6 +66,7 @@ class CartMetaProvider implements PageMetaProviderInterface
                 context: [
                     'method' => __METHOD__,
                     'message' => $exception->getMessage(),
+                    'exception' => $exception,
                 ],
             );
         }
@@ -87,6 +88,7 @@ class CartMetaProvider implements PageMetaProviderInterface
                 context: [
                     'method' => __METHOD__,
                     'message' => $exception->getMessage(),
+                    'exception' => $exception,
                 ],
             );
         }
