@@ -13,6 +13,8 @@ use Klevu\FrontendMetadataApi\Service\Provider\PageMetaProviderInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Api\Data\CartInterface;
@@ -33,20 +35,37 @@ class CartMetaProvider implements PageMetaProviderInterface
      * @var ItemIdProviderInterface
      */
     private readonly ItemIdProviderInterface $itemIdProvider;
+    /**
+     * @var RequestInterface
+     */
+    private readonly RequestInterface $request;
+    /**
+     * @var string[]|null
+     */
+    private ?array $outputOnRoutes;
 
     /**
      * @param CheckoutSession $checkoutSession
      * @param LoggerInterface $logger
      * @param ItemIdProviderInterface $itemIdProvider
+     * @param RequestInterface|null $request
+     * @param string[]|null $outputOnRoutes
      */
     public function __construct(
         CheckoutSession $checkoutSession,
         LoggerInterface $logger,
         ItemIdProviderInterface $itemIdProvider,
+        ?RequestInterface $request = null,
+        ?array $outputOnRoutes = null,
     ) {
         $this->checkoutSession = $checkoutSession;
         $this->logger = $logger;
         $this->itemIdProvider = $itemIdProvider;
+        $objectManager = ObjectManager::getInstance();
+        $this->request = $request ?: $objectManager->get(RequestInterface::class);
+        $this->outputOnRoutes = (null === $outputOnRoutes)
+            ? null
+            : array_map('strval', $outputOnRoutes);
     }
 
     /**
@@ -55,6 +74,11 @@ class CartMetaProvider implements PageMetaProviderInterface
     public function get(): array
     {
         $return = [];
+
+        if (!$this->shouldOutput()) {
+            return $return;
+        }
+
         try {
             $quote = $this->getQuote();
             if (null !== $quote) {
@@ -167,5 +191,33 @@ class CartMetaProvider implements PageMetaProviderInterface
         }
 
         return $itemUrl;
+    }
+
+    /**
+     * @return bool
+     */
+    private function shouldOutput(): bool
+    {
+        if (null === $this->outputOnRoutes) {
+            return true;
+        }
+
+        $return = false;
+        $currentRoute = implode(
+            separator: '_',
+            array: [
+                $this->request->getModuleName(),
+                $this->request->getControllerName(),
+                $this->request->getActionName(),
+            ],
+        );
+        foreach ($this->outputOnRoutes as $route) {
+            if ($currentRoute === $route) {
+                $return = true;
+                break;
+            }
+        }
+
+        return $return;
     }
 }
