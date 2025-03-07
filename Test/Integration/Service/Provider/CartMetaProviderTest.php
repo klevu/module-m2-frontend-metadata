@@ -26,10 +26,12 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Downloadable\Model\Product\Type as DownloadableType;
 use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Magento\Eav\Model\Entity\Attribute\AttributeInterface;
+use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\TestFramework\Helper\Bootstrap;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use TddWizard\Fixtures\Catalog\ProductFixturePool;
@@ -510,5 +512,254 @@ class CartMetaProviderTest extends TestCase
             message: 'itemUrl',
         );
         $this->assertSame(expected: 2.0, actual: $result2['itemQty']);
+    }
+
+    /**
+     * @testWith ["checkout_index_index", ["checkout_cart_index"]]
+     *           ["checkout_cart_index", []]
+     *           ["checkout_cart_index", ["cms_index_index", "catalog_product_view"]]
+     * @magentoDbIsolation disabled
+     * @magentoConfigFixture default/klevu_frontend/metadata/enabled 1
+     * @magentoConfigFixture default_store klevu_frontend/metadata/enabled 1
+     *
+     * @param string $route
+     * @param string[] $outputOnRoutes
+     *
+     * @return void
+     * @throws LocalizedException
+     */
+    public function testGet_DoesNotReturn_OnUnmappedRoute(
+        string $route,
+        array $outputOnRoutes,
+    ): void {
+        $this->createProduct([
+            'name' => 'Klevu Product Name 1',
+            'sku' => 'product_simple_sku_1',
+            'price' => 199.99,
+            'key' => 'product_simple_cart_key_1',
+        ]);
+        $productFixture1 = $this->productFixturePool->get('product_simple_cart_key_1');
+
+        $this->createProduct([
+            'name' => 'Klevu Product Name 2',
+            'sku' => 'product_simple_sku_2',
+            'type_id' => Type::TYPE_VIRTUAL,
+            'price' => 19.99,
+            'key' => 'product_simple_cart_key_2',
+        ]);
+        $productFixture2 = $this->productFixturePool->get('product_simple_cart_key_2');
+
+        $this->createProduct([
+            'name' => 'Klevu Product Name 3',
+            'sku' => 'product_simple_sku_3',
+            'type_id' => DownloadableType::TYPE_DOWNLOADABLE,
+            'price' => 19.99,
+            'key' => 'product_simple_cart_key_3',
+        ]);
+        $productFixture3 = $this->productFixturePool->get('product_simple_cart_key_3');
+
+        $this->createCart([
+            'products' => [
+                'simple' => [
+                    $productFixture1->getSku() => 1,
+                ],
+                'virtual' => [
+                    $productFixture2->getSku() => 3,
+                ],
+                'downloadable' => [
+                    $productFixture3->getSku() => 2,
+                ],
+            ],
+        ]);
+
+        $mockRequest = $this->getMockRequest(
+            route: $route,
+        );
+        $provider = $this->instantiateTestObject(
+            arguments: [
+                'request' => $mockRequest,
+                'outputOnRoutes' => $outputOnRoutes,
+            ],
+        );
+
+        $result = $provider->get();
+
+        $this->assertSame(
+            expected: [],
+            actual: $result,
+        );
+    }
+
+    /**
+     * @testWith ["checkout_cart_index", ["checkout_cart_index"]]
+     *           ["catalog_product_view", ["cms_index_index", "catalog_product_view"]]
+     * @magentoDbIsolation disabled
+     * @magentoConfigFixture default/klevu_frontend/metadata/enabled 1
+     * @magentoConfigFixture default_store klevu_frontend/metadata/enabled 1
+     *
+     * @param string $route
+     * @param string[] $outputOnRoutes
+     *
+     * @return void
+     * @throws LocalizedException
+     */
+    public function testGet_Returns_OnMappedRoute(
+        string $route,
+        array $outputOnRoutes,
+    ): void {
+        $this->createProduct([
+            'name' => 'Klevu Product Name 1',
+            'sku' => 'product_simple_sku_1',
+            'price' => 199.99,
+            'key' => 'product_simple_cart_key_1',
+        ]);
+        $productFixture1 = $this->productFixturePool->get('product_simple_cart_key_1');
+
+        $this->createProduct([
+            'name' => 'Klevu Product Name 2',
+            'sku' => 'product_simple_sku_2',
+            'type_id' => Type::TYPE_VIRTUAL,
+            'price' => 19.99,
+            'key' => 'product_simple_cart_key_2',
+        ]);
+        $productFixture2 = $this->productFixturePool->get('product_simple_cart_key_2');
+
+        $this->createProduct([
+            'name' => 'Klevu Product Name 3',
+            'sku' => 'product_simple_sku_3',
+            'type_id' => DownloadableType::TYPE_DOWNLOADABLE,
+            'price' => 19.99,
+            'key' => 'product_simple_cart_key_3',
+        ]);
+        $productFixture3 = $this->productFixturePool->get('product_simple_cart_key_3');
+
+        $this->createCart([
+            'products' => [
+                'simple' => [
+                    $productFixture1->getSku() => 1,
+                ],
+                'virtual' => [
+                    $productFixture2->getSku() => 3,
+                ],
+                'downloadable' => [
+                    $productFixture3->getSku() => 2,
+                ],
+            ],
+        ]);
+
+        $mockRequest = $this->getMockRequest(
+            route: $route,
+        );
+        $provider = $this->instantiateTestObject(
+            arguments: [
+                'request' => $mockRequest,
+                'outputOnRoutes' => $outputOnRoutes,
+            ],
+        );
+        $result = $provider->get();
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey(key: 'products', array: $result);
+        $this->assertCount(expectedCount: 3, haystack: $result['products']);
+
+        $result1Array = array_filter(
+            array: $result['products'],
+            callback: static fn (array $data): bool => (
+                ($data['itemId'] ?? null) === (string)$productFixture1->getId()
+            ),
+        );
+        $result1 = array_shift($result1Array);
+
+        $this->assertArrayHasKey(key: 'itemGroupId', array: $result1);
+        $this->assertSame(expected: '', actual: $result1['itemGroupId'], message: 'itemGroupId');
+
+        $this->assertArrayHasKey(key: 'itemName', array: $result1);
+        $this->assertSame(expected: 'Klevu Product Name 1', actual: $result1['itemName'], message: 'itemName');
+
+        $this->assertArrayHasKey(key: 'itemSalesPrice', array: $result1);
+        $this->assertSame(expected: '199.99', actual: $result1['itemSalesPrice'], message: 'itemSalesPrice');
+
+        $this->assertArrayHasKey(key: 'itemUrl', array: $result1);
+        $this->assertStringContainsString(
+            needle: str_replace('_', '-', $productFixture1->getSku()) . '.html',
+            haystack: $result1['itemUrl'],
+            message: 'itemUrl',
+        );
+        $this->assertSame(expected: 1.0, actual: $result1['itemQty']);
+
+        $result2Array = array_filter(
+            array: $result['products'],
+            callback: static fn (array $data): bool => (
+                ($data['itemId'] ?? null) === (string)$productFixture2->getId()
+            ),
+        );
+        $result2 = array_shift($result2Array);
+
+        $this->assertArrayHasKey(key: 'itemGroupId', array: $result2);
+        $this->assertSame(expected: '', actual: $result2['itemGroupId'], message: 'itemGroupId');
+
+        $this->assertArrayHasKey(key: 'itemName', array: $result2);
+        $this->assertSame(expected: 'Klevu Product Name 2', actual: $result2['itemName'], message: 'itemName');
+
+        $this->assertArrayHasKey(key: 'itemSalesPrice', array: $result2);
+        $this->assertSame(expected: '19.99', actual: $result2['itemSalesPrice'], message: 'itemSalesPrice');
+
+        $this->assertArrayHasKey(key: 'itemUrl', array: $result2);
+        $this->assertStringContainsString(
+            needle: str_replace('_', '-', $productFixture2->getSku()) . '.html',
+            haystack: $result2['itemUrl'],
+            message: 'itemUrl',
+        );
+        $this->assertSame(expected: 3.0, actual: $result2['itemQty']);
+
+        $result3Array = array_filter(
+            array: $result['products'],
+            callback: static fn (array $data): bool => (
+                ($data['itemId'] ?? null) === (string)$productFixture3->getId()
+            ),
+        );
+        $result3 = array_shift($result3Array);
+
+        $this->assertArrayHasKey(key: 'itemGroupId', array: $result3);
+        $this->assertSame(expected: '', actual: $result3['itemGroupId'], message: 'itemGroupId');
+
+        $this->assertArrayHasKey(key: 'itemName', array: $result3);
+        $this->assertSame(expected: 'Klevu Product Name 3', actual: $result3['itemName'], message: 'itemName');
+
+        $this->assertArrayHasKey(key: 'itemSalesPrice', array: $result3);
+        $this->assertSame(expected: '19.99', actual: $result3['itemSalesPrice'], message: 'itemSalesPrice');
+
+        $this->assertArrayHasKey(key: 'itemUrl', array: $result3);
+        $this->assertStringContainsString(
+            needle: str_replace('_', '-', $productFixture3->getSku()) . '.html',
+            haystack: $result3['itemUrl'],
+            message: 'itemUrl',
+        );
+        $this->assertSame(expected: 2.0, actual: $result3['itemQty']);
+    }
+
+    /**
+     * @param string $route
+     *
+     * @return MockObject
+     */
+    private function getMockRequest(string $route): MockObject
+    {
+        $mockRequest = $this->getMockBuilder(HttpRequest::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $routeParts = explode(
+                separator: '_',
+                string: $route,
+            ) + ['index', 'index', 'index'];
+        $mockRequest->method('getModuleName')
+            ->willReturn($routeParts[0]);
+        $mockRequest->method('getControllerName')
+            ->willReturn($routeParts[1]);
+        $mockRequest->method('getActionName')
+            ->willReturn($routeParts[2]);
+
+        return $mockRequest;
     }
 }
