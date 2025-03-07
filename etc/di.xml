@@ -58,9 +58,10 @@
                 </item>
             </argument>
             <argument name="pageMetaProviders" xsi:type="array">
-                <!-- Do not add cart here, it will get cached, see Magento\Customer\CustomerData\SectionPoolInterface -->
                 <item name="pageType"
                       xsi:type="object">Klevu\FrontendMetadata\Service\Provider\PageTypeMetaProvider</item>
+                <item name="cart"
+                      xsi:type="object">Klevu\FrontendMetadata\Service\Provider\CartMetaProvider\ForViewModel</item>
             </argument>
             <argument name="serializer" xsi:type="object">Magento\Framework\Serialize\Serializer\Json</argument>
         </arguments>
@@ -124,6 +125,15 @@
             <argument name="logger" xsi:type="object">Klevu\Frontend\Logger\Logger</argument>
         </arguments>
     </type>
+
+    <virtualType name="Klevu\FrontendMetadata\Service\Provider\CartMetaProvider\ForViewModel"
+                 type="Klevu\FrontendMetadata\Service\Provider\CartMetaProvider">
+        <arguments>
+            <argument name="outputOnRoutes" xsi:type="array">
+                <item name="checkout_cart" xsi:type="string">checkout_cart_index</item>
+            </argument>
+        </arguments>
+    </virtualType>
 
     <type name="Klevu\FrontendMetadata\CustomerData\Metadata\Cart">
         <arguments>
